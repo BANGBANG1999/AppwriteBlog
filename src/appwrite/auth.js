@@ -1,4 +1,66 @@
-import conf from "../conf/conf";
+// import conf from "../conf/conf.js";
+// import { Client, Account, ID } from "appwrite";
+
+// export class AuthService {
+//   client = new Client();
+//   account;
+
+//   constructor() {
+//     this.client.setEndpoint(conf.appwriteUrl).setProject(conf.projectId);
+//     this.account = new Account(this.client);
+//   }
+
+//   async createAccount({ name, email, password }) {
+//     try {
+//       const userAccount = await this.account.create(
+//         ID.unique(),
+//         name,
+//         email,
+//         password
+//       );
+//       if (userAccount) {
+//         //Login automatically
+//         return this.login({ email, password });
+//       } else {
+//         return userAccount;
+//       }
+//     } catch (error) {
+//       throw error;
+//     }
+//   }
+
+//   async login({ email, password }) {
+//     try {
+//       return await this.account.createEmailSession(email, password);
+//     } catch (error) {
+//       throw error;
+//     }
+//     return null;
+//   }
+
+//   async getCurrentUser() {
+//     try {
+//       return await this.account.get();
+//     } catch (error) {
+//       throw error;
+//     }
+//     return null;
+//   }
+
+//   async logout() {
+//     try {
+//       return await this.account.deleteSessions();
+//     } catch (error) {
+//       throw error;
+//     }
+//   }
+// }
+
+// const authService = new AuthService();
+
+// export default authService;
+
+import conf from "../conf/conf.js";
 import { Client, Account, ID } from "appwrite";
 
 export class AuthService {
@@ -7,19 +69,19 @@ export class AuthService {
 
   constructor() {
     this.client.setEndpoint(conf.appwriteUrl).setProject(conf.projectId);
-    this.account = new Account(client);
+    this.account = new Account(this.client);
   }
 
-  async createAccount({ name, email, password }) {
+  async createAccount({ email, password, name }) {
     try {
       const userAccount = await this.account.create(
         ID.unique(),
-        name,
         email,
-        password
+        password,
+        name
       );
       if (userAccount) {
-        //Login automatically
+        // call another method
         return this.login({ email, password });
       } else {
         return userAccount;
@@ -35,23 +97,23 @@ export class AuthService {
     } catch (error) {
       throw error;
     }
-    return null;
   }
 
   async getCurrentUser() {
     try {
       return await this.account.get();
     } catch (error) {
-      throw error;
+      console.log("Appwrite serive :: getCurrentUser :: error", error);
     }
+
     return null;
   }
 
   async logout() {
     try {
-      return await this.account.deleteSessions();
+      await this.account.deleteSessions();
     } catch (error) {
-      throw error;
+      console.log("Appwrite serive :: logout :: error", error);
     }
   }
 }
