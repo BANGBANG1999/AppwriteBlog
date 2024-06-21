@@ -77,10 +77,10 @@ export class Services {
     }
   }
 
-  async getAllPosts(queries = [Query.equal("STATUS", "ACTIVE")]) {
+  async getAllPosts(queries = [Query.equal("status", "active")]) {
     //Here to use Query method we need to set indexes in  appwrite
     try {
-      return await databases.listDocuments(
+      return await this.databases.listDocuments(
         conf.databaseId,
         conf.collectionId,
         queries
@@ -95,7 +95,7 @@ export class Services {
 
   async uploadFile(file) {
     try {
-      return await this.storage.createFile(conf.bucketId, file);
+      return await this.storage.createFile(conf.bucketId, ID.unique(), file);
     } catch (error) {
       console.log("Appwrite serive :: uploadFile :: error", error);
       return false;
@@ -114,7 +114,7 @@ export class Services {
 
   getFilePreview(fileId) {
     try {
-      return storage.getFilePreview(conf.bucketId, fileId);
+      return this.storage.getFilePreview(conf.bucketId, fileId);
     } catch (error) {
       console.log("Appwrite serive :: getFilePreview :: error", error);
       return false;

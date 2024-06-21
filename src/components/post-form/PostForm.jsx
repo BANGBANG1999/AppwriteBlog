@@ -4,8 +4,10 @@ import { Button, Input, Select, RTE } from "../index";
 import appwriteService from "../../appwrite/config";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
+import SkeletonComponent from "../Skeleton";
 
 function PostForm({ post }) {
+  // const [loading, setLoading] = useState(false);
   const { register, handleSubmit, watch, control, setValue, getValues } =
     useForm({
       defaultValues: {
@@ -19,11 +21,13 @@ function PostForm({ post }) {
 
   const navigate = useNavigate();
   const userData = useSelector((state) => state.auth.userData);
+  // console.log(userData);
 
   const submit = async (data) => {
+    // console.log(data);
     if (post) {
       const file = data.image[0]
-        ? appwriteService.uploadFile(data.image[0])
+        ? await appwriteService.uploadFile(data.image[0])
         : null;
 
       if (file) await appwriteService.deleteFile(post.featuredImage);
@@ -32,18 +36,24 @@ function PostForm({ post }) {
         ...data,
         featuredImage: file ? file.$id : undefined,
       });
-      if (dbUpdatePost) navigate(`/post/${dbUpdatePost.$id}`);
+      if (dbUpdatePost) {
+        navigate(`/post/${dbUpdatePost.$id}`);
+      }
     } else {
       const file = data.image[0]
         ? await appwriteService.uploadFile(data.image[0])
         : null;
 
       if (file) {
-        data.featuredImage = file.$id;
+        // console.log("Test: ", file);
+        const fileId = file.$id;
+        // console.log(fileId);
+        data.featuredImage = fileId;
         const dbCreatePost = await appwriteService.createPost({
           ...data,
           userId: userData.$id,
         });
+        console.log(userData);
         if (dbCreatePost) {
           navigate(`/post/${dbCreatePost.$id}`);
         }
@@ -56,7 +66,7 @@ function PostForm({ post }) {
       return value
         .trim()
         .toLowerCase()
-        .replace(/^[a-zA-Z\d\s]+/g, "-")
+        .replace(/[^a-zA-Z\d\s]+/g, "-")
         .replace(/\s/g, "-");
     return "";
   });

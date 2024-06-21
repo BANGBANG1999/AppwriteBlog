@@ -5,9 +5,11 @@ import { Logo, Button, Input } from "./index";
 import { useNavigate, Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { useForm } from "react-hook-form";
+import SkeletonComponent from "./Skeleton";
 
 function SignUp() {
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { register, handleSubmit } = useForm();
@@ -15,17 +17,21 @@ function SignUp() {
   const create = async (data) => {
     setError("");
     try {
+      setLoading(true);
       const userData = await authService.createAccount(data);
       if (userData) {
         const userData = await authService.getCurrentUser();
         if (userData) dispatch(authLogin(userData));
+        setLoading(false);
         navigate("/");
       }
     } catch (error) {
       setError(error.message);
     }
   };
-  return (
+  return loading ? (
+    <SkeletonComponent />
+  ) : (
     <div className="flex items-center justify-center">
       <div
         className={`mx-auto w-full max-w-lg bg-gray-100 rounded-xl p-10 border border-black/10`}
@@ -63,7 +69,7 @@ function SignUp() {
               type="email"
               placeholder="Enter your email"
               label="Email: "
-              {...register("name", {
+              {...register("email", {
                 required: true,
                 validate: {
                   matchPattern: (value) =>

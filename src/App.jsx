@@ -4,6 +4,9 @@ import { useDispatch } from "react-redux";
 import authService from "./appwrite/auth";
 import { login, logout } from "./store/authSlice";
 import { Footer, Header } from "./components";
+import { Outlet } from "react-router-dom";
+import Skeleton from "./components/Skeleton";
+import SkeletonComponent from "./components/Skeleton";
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -15,24 +18,31 @@ function App() {
       .then((userData) => {
         if (userData) {
           dispatch(login({ userData }));
+          // console.log(userData);
         } else {
           dispatch(logout());
         }
       })
-      .catch((error) => console.log("User not found"))
-      .finally(() => setLoading(false));
+      .catch((error) => console.log("Error is: ", error))
+      .finally(() => {
+        setLoading(false);
+      });
   }, []);
 
   return !loading ? (
     <div className="min-h-screen flex flex-wrap content-between bg-gray-400">
       <div className="w-full block">
         <Header />
-        <main>{/* TODO: <Outlet /> */}</main>
+        <main>
+          <Outlet />
+        </main>
         <Footer />
       </div>
     </div>
   ) : (
-    <div>Loading...</div>
+    <div>
+      <SkeletonComponent />
+    </div>
   );
 }
 
