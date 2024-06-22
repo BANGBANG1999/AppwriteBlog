@@ -1,18 +1,21 @@
-import React from "react";
+import React, { useState } from "react";
 import { Controller } from "react-hook-form";
 import { Editor } from "@tinymce/tinymce-react";
+import conf from "../conf/conf";
 
 function RTE({ name, control, label, defaultValue = "" }) {
+  const [loading, setLoading] = useState(true);
   return (
     <div className="w-full">
       {label && <label className="inline-block mb-1 pl-1">{label}</label>}
 
+      {loading && <SkeletonComponent />}
       <Controller
         name={name || "content"}
         control={control}
         render={({ field: { onChange } }) => (
           <Editor
-            apiKey="qdf8ejdns4aww3trolouavbo1ufmqf698t4d3h9by8rd1u22"
+            apiKey={conf.tinyMCEKey}
             initialValue={defaultValue}
             init={{
               height: 500,
@@ -43,6 +46,11 @@ function RTE({ name, control, label, defaultValue = "" }) {
                 "undo redo | blocks | image | bold italic forecolor | alignleft aligncenter bold italic forecolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent |removeformat | help",
               content_style:
                 "body {font-family:Helvetica,Arial,sans-serif; font-size:14px }",
+              setup: (editor) => {
+                editor.on("init", () => {
+                  setLoading(false);
+                });
+              },
             }}
             onEditorChange={onChange}
           />
