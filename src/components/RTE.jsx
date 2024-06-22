@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Controller } from "react-hook-form";
 import { Editor } from "@tinymce/tinymce-react";
 import conf from "../conf/conf";
+import SkeletonComponent from "./Skeleton";
 
 function RTE({ name, control, label, defaultValue = "" }) {
   const [loading, setLoading] = useState(true);
